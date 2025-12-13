@@ -8,13 +8,13 @@ public class SavePlayUI : MonoBehaviour
     [Header("UI References")]
     [SerializeField] private Button saveButton;
     [SerializeField] private Button updateButton;
-    
+
     [Header("References")]
     [SerializeField] private PlayManager playManager;
-    
+
     [Header("Settings")]
     [SerializeField] private int minNameLength = 3;
-    
+
     [Header("Events")]
     public UnityEvent<string> OnPlaySaved;
     public UnityEvent<string> OnError;
@@ -24,7 +24,7 @@ public class SavePlayUI : MonoBehaviour
         // Configurar botones
         if (saveButton != null)
             saveButton.onClick.AddListener(ShowSavePopup);
-        
+
         if (updateButton != null)
             updateButton.onClick.AddListener(UpdatePlay);
     }
@@ -73,7 +73,7 @@ public class SavePlayUI : MonoBehaviour
 
         // Obtener team ID actual
         int teamId = GameManager.Instance.GetCurrentTeamId();
-        
+
         if (teamId <= 0)
         {
             ShowError("No team selected");
@@ -87,22 +87,22 @@ public class SavePlayUI : MonoBehaviour
         playManager.SavePlayToAPI(teamId, playName, (success, message) =>
         {
             SetButtonsInteractable(true);
-            
+
             if (success)
             {
                 Debug.Log($"✅ Play saved to API: {playName}");
                 OnPlaySaved?.Invoke(playName);
-                
+
                 if (PopUp.Instance != null)
                 {
-                    PopUp.Instance.Alert($"Play '{playName}' saved successfully!");
+                    PopUp.Instance.Info($"Play '{playName}' saved successfully!");
                 }
             }
             else
             {
                 Debug.LogError($"❌ Failed to save play: {message}");
                 OnError?.Invoke(message);
-                
+
                 if (PopUp.Instance != null)
                 {
                     PopUp.Instance.Alert($"Error: {message}");
@@ -123,7 +123,7 @@ public class SavePlayUI : MonoBehaviour
         }
 
         Play currentPlay = playManager.GetCurrentPlay();
-        
+
         if (currentPlay.id <= 0)
         {
             ShowError("Play is not saved in API yet");
@@ -145,23 +145,23 @@ public class SavePlayUI : MonoBehaviour
         playManager.UpdatePlayInAPI((success, message) =>
         {
             SetButtonsInteractable(true);
-            
+
             if (success)
             {
                 Play currentPlay = playManager.GetCurrentPlay();
                 Debug.Log($"✅ Play updated: {currentPlay.name}");
                 OnPlaySaved?.Invoke(currentPlay.name);
-                
+
                 if (PopUp.Instance != null)
                 {
-                    PopUp.Instance.Alert("Play updated successfully!");
+                    PopUp.Instance.Info("Play updated successfully!");
                 }
             }
             else
             {
                 Debug.LogError($"❌ Failed to update play: {message}");
                 OnError?.Invoke(message);
-                
+
                 if (PopUp.Instance != null)
                 {
                     PopUp.Instance.Alert($"Error: {message}");
@@ -197,7 +197,7 @@ public class SavePlayUI : MonoBehaviour
     {
         Debug.LogWarning($"⚠️ {message}");
         OnError?.Invoke(message);
-        
+
         if (PopUp.Instance != null)
         {
             PopUp.Instance.Alert(message);
@@ -208,7 +208,7 @@ public class SavePlayUI : MonoBehaviour
     {
         if (saveButton != null)
             saveButton.interactable = interactable;
-        
+
         if (updateButton != null)
             updateButton.interactable = interactable;
     }
@@ -220,7 +220,7 @@ public class SavePlayUI : MonoBehaviour
     {
         if (saveButton != null)
             saveButton.onClick.RemoveAllListeners();
-        
+
         if (updateButton != null)
             updateButton.onClick.RemoveAllListeners();
     }

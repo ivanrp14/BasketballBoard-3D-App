@@ -92,10 +92,8 @@ public class TeamPanel : MonoBehaviour
         {
             GameManager.Instance.SetCurrentTeam(_teamId);
 
-            // Mostrar loading
-            LoadingScreen.Instance?.ShowLoading("");
-            // Cargar escena asincrónicamente
-            StartCoroutine(LoadSceneAsync(1));
+            // Usar el cargador centralizado
+            SceneLoader.Instance?.LoadSceneWithTransition(1);
         }
         else
         {
@@ -103,30 +101,7 @@ public class TeamPanel : MonoBehaviour
             PopUp.Instance?.Alert("GameManager not found");
         }
     }
-    private IEnumerator LoadSceneAsync(int sceneIndex)
-    {
-        // Comienza carga
-        AsyncOperation asyncOp = SceneManager.LoadSceneAsync(sceneIndex);
 
-        // Evita que la escena cambie sola hasta que tú lo decidas
-        asyncOp.allowSceneActivation = false;
-
-        // Espera mientras carga
-        while (!asyncOp.isDone)
-        {
-            // Cuando llegue al 90%, Unity ya terminó de cargar
-            if (asyncOp.progress >= 0.9f)
-            {
-                // Oculta loading después de terminar la carga previa
-                LoadingScreen.Instance?.HideLoading();
-
-                // Activar la escena
-                asyncOp.allowSceneActivation = true;
-            }
-
-            yield return null;
-        }
-    }
 
 
 
@@ -169,7 +144,7 @@ public class TeamPanel : MonoBehaviour
             GUIUtility.systemCopyBuffer = code;
 
             // Mostrar código con opción de compartir más detalles
-            PopUp.Instance?.Info($"Invitation code copied!\n\n{code}\n\nShare this code with others to invite them to '{_teamName}'.");
+            PopUp.Instance?.Info($"Invitation code copied!\n{code}");
         }
     }
 
@@ -186,7 +161,7 @@ public class TeamPanel : MonoBehaviour
 
         // Confirmar antes de borrar (usando el nuevo sistema)
         PopUp.Instance.Confirm(
-            message: $"Are you sure you want to delete team '{_teamName}'?\n\nThis action cannot be undone.",
+            message: $"Are you sure you want to delete team '{_teamName}'?\nThis action cannot be undone.",
             onConfirm: () => PerformDeleteTeam(),
             onCancel: () => Debug.Log("Delete cancelled")
         );
@@ -224,7 +199,7 @@ public class TeamPanel : MonoBehaviour
         if (success)
         {
             Debug.Log($"✅ {message}");
-            PopUp.Instance?.Alert($"Team '{_teamName}' deleted successfully");
+            PopUp.Instance?.Info($"Team '{_teamName}' deleted successfully");
 
             // Buscar el MainPanel y refrescar la lista
             MainPanel mainPanel = FindObjectOfType<MainPanel>();

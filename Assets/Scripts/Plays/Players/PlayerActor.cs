@@ -6,6 +6,10 @@ public class PlayActor : MonoBehaviour
     public Animator animator;
     public Transform lookTarget;
     private Draggable draggable;
+    [Header("Color Settings")]
+    public Color teamColor = Color.white;
+    [SerializeField] private Renderer kicksRenderer, shirtRenderer, pantsRenderer, skinRenderer;
+    [SerializeField] private Color kicksColor, shirtColor, pantsColor, skinColor;
 
     void Awake()
     {
@@ -60,6 +64,24 @@ public class PlayActor : MonoBehaviour
         {
             animator.SetBool("Float", false);
         }
+    }
+    public void SetEquipementColor(Color color)
+    {
+        teamColor = color;
+        kicksColor = teamColor * Color.white;
+        shirtColor = teamColor * Color.white;
+        pantsColor = teamColor * Color.white;
+        skinColor = skinColor; //
+
+        if (kicksRenderer)
+            kicksRenderer.material.color = kicksColor;
+        if (shirtRenderer)
+            shirtRenderer.material.color = shirtColor;
+        if (pantsRenderer)
+            pantsRenderer.material.color = pantsColor;
+        if (skinRenderer)
+            skinRenderer.material.color = skinColor;
+
     }
 
 }

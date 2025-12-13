@@ -1,2 +1,0 @@
-D:\Proyectos\Unity\BasketballBoard3D\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\CMakeLists.txt
-D:\Proyectos\Unity\BasketballBoard3D\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\GameActivity\CMakeLists.txt

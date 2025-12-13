@@ -67,7 +67,7 @@ public class PlaysPanel : MonoBehaviour
             return;
         }
 
-        int teamId = 3;//GameManager.Instance.GetCurrentTeamId();
+        int teamId = GameManager.Instance.GetCurrentTeamId();
 
         if (teamId <= 0)
         {

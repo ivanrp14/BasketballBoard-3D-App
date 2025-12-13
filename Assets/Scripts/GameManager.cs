@@ -124,6 +124,11 @@ public class GameManager : MonoBehaviour
         return CurrentTeam?.role ?? "none";
     }
 
+    public Color GetCurrentTeamColor()
+    {
+        return CurrentTeamColor;
+    }
+
     public bool IsCurrentTeamAdmin()
     {
         return CurrentTeam != null && CurrentTeam.role == "admin";

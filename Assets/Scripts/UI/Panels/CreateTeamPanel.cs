@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -8,9 +9,9 @@ public class CreateTeamPanel : MonoBehaviour
 {
     [SerializeField] private TMP_InputField teamNameInput;
     [SerializeField] private List<Button> colorButtons;
-    public Color teamColor;
+    public string teamColor;
     public UnityEvent<string> OnCreateTeamSucceded, OnCreateTeamFailed;
-    
+
     void Awake()
     {
         foreach (Button button in colorButtons)
@@ -25,7 +26,7 @@ public class CreateTeamPanel : MonoBehaviour
     }
     void SetTeamColor(Color color)
     {
-        teamColor = color;
+        teamColor = color.ToHexString();
     }
     public void Create()
     {

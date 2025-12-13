@@ -1,38 +1,88 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Collections;
-using System;
 
 public class SceneLoader : MonoBehaviour
 {
-    [SerializeField] private GameObject loadingPanel;
-    public static Action onSceneLoaded;
+    public static SceneLoader Instance;
 
-
-    public void LoadScene(string sceneName)
+    private void Awake()
     {
-        StartCoroutine(LoadAsync(sceneName));
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
-    private IEnumerator LoadAsync(string sceneName)
+    /// <summary>
+    /// Carga una escena mostrando la escena "LoadingIntermedia" primero.
+    /// </summary>
+    public void LoadSceneWithTransition(int targetScene)
     {
-        if (loadingPanel != null)
-            loadingPanel.SetActive(true);
+        StartCoroutine(LoadProcess(targetScene));
+    }
 
-        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
-        operation.allowSceneActivation = false;
+    private IEnumerator LoadProcess(int sceneToLoad)
+    {
+        // 1️⃣ Cargar escena intermedia
+        yield return SceneManager.LoadSceneAsync("Loading", LoadSceneMode.Single);
 
-        while (!operation.isDone)
+        // 2️⃣ Esperar a que Unity haga el primer render REAL
+        yield return new WaitForEndOfFrame();
+
+        // 3️⃣ Mostrar la UI del loading SIN que desaparezca
+        LoadingScreen.Instance?.ShowLoading("Loading...");
+
+        // 4️⃣ Comenzar a cargar la escena destino
+        AsyncOperation asyncOp = SceneManager.LoadSceneAsync(sceneToLoad);
+        asyncOp.allowSceneActivation = false;
+
+        // 5️⃣ Esperar que termine la carga
+        while (asyncOp.progress < 0.9f)
         {
-            // Activar la escena cuando esté cargada al 90%
-            if (operation.progress >= 0.9f)
-            {
-                operation.allowSceneActivation = true;
-            }
             yield return null;
         }
 
-        if (loadingPanel != null)
-            loadingPanel.SetActive(false);
+        // (opcional) pequeño delay estético
+        yield return new WaitForSeconds(0.2f);
+
+
+        asyncOp.allowSceneActivation = true;
+    }
+
+    public void LoadSceneWithTransition(string targetScene)
+    {
+        StartCoroutine(LoadProcess(targetScene));
+    }
+
+    private IEnumerator LoadProcess(string sceneToLoad)
+    {
+        // 1️⃣ Cargar escena intermedia
+        yield return SceneManager.LoadSceneAsync("Loading", LoadSceneMode.Single);
+
+        // 2️⃣ Esperar a que Unity haga el primer render REAL
+        yield return new WaitForEndOfFrame();
+
+        // 3️⃣ Mostrar la UI del loading SIN que desaparezca
+        LoadingScreen.Instance?.ShowLoading("Loading...");
+
+        // 4️⃣ Comenzar a cargar la escena destino
+        AsyncOperation asyncOp = SceneManager.LoadSceneAsync(sceneToLoad);
+        asyncOp.allowSceneActivation = false;
+
+        // 5️⃣ Esperar que termine la carga
+        while (asyncOp.progress < 0.9f)
+        {
+            yield return null;
+        }
+
+        // (opcional) pequeño delay estético
+        yield return new WaitForSeconds(0.2f);
+
+
+        asyncOp.allowSceneActivation = true;
     }
 }

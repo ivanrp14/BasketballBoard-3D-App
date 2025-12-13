@@ -6,7 +6,7 @@ public class RecordButton : MonoBehaviour
 {
     [Header("UI")]
     public Button recordBtn;
-    private TextMeshProUGUI buttonText; // El texto que muestra el número de pasos
+    private TextMeshProUGUI buttonText;
 
     public bool isRecording = false;
     private int stepCount = 0;
@@ -17,29 +17,32 @@ public class RecordButton : MonoBehaviour
     {
         playManager = FindFirstObjectByType<PlayManager>();
 
-
         recordBtn = GetComponent<Button>();
-        if (recordBtn != null)
-            recordBtn.onClick.AddListener(OnRecordClick);
         buttonText = GetComponentInChildren<TextMeshProUGUI>();
 
+        if (recordBtn != null)
+            recordBtn.onClick.AddListener(OnRecordClick);
     }
 
     private void OnRecordClick()
     {
+        // 👉 Si NO está grabando o no hay Play cargado → empezar nueva grabación
         if (!isRecording || playManager.GetCurrentPlay() == null)
         {
-            // Primer click: iniciar grabación
             isRecording = true;
             stepCount = 0;
+
+            // RESET PLAY
+            playManager.SetCurrentPlay(null);
             playManager.StartRecording();
+
+            UpdateStepText();
+            return;
         }
-        else
-        {
-            // Clicks siguientes: grabar un step
-            stepCount++;
-            playManager.RecordStep();
-        }
+
+        // 👉 Si ya está grabando → agregar step
+        stepCount++;
+        playManager.RecordStep();
 
         UpdateStepText();
     }
